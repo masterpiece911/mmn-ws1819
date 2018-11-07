@@ -9,7 +9,7 @@
 
     function spotifySearch(query, type){
       const baseURL = 'http://flobe-online.de:3000/search';
-      const apiKey = "-- provided by MMN staff --";
+      const apiKey = "m-ulti-M-EDIA";
 
       const fullSearchURL = baseURL+"?q="+query+"&type="+type+"&key="+apiKey;
 
@@ -34,6 +34,8 @@
             parsedResponse.artists.items.forEach(function(artist) {
               var divEl = document.createElement('div');
               var imgEl = document.createElement('img');
+              var wrapper = document.createElement('a');
+              console.log(artist.external_urls.spotify);
 
               // construct the image;
               imgEl.setAttribute('src', artist.images && artist.images.length ? artist.images[0].url : null);
@@ -43,7 +45,9 @@
 
               // add things together;
               divEl.classList.add('artist');
-              divEl.appendChild(imgEl);            
+              wrapper.appendChild(imgEl);
+              wrapper.href = artist.external_urls.spotify;
+              divEl.appendChild(wrapper);
               document.getElementById('result').appendChild(divEl);
             });
           }
@@ -58,11 +62,18 @@
       spotifySearch('acdc','artist');
   });
 
+    function inputEventRecieved() {
+        var input = document.getElementById('search').value;
+        if (input.length > 2) {
+          spotifySearch(input, 'artist');
+        } 
+    }
+
     
   </script>
 </head>
 <body>
-<input type="search" id="search" placeholder="Search artist...">
+<input type="search" id="search" placeholder="Search artist..." oninput="inputEventRecieved()">
 <div id="result">
   <!-- this will contain the results from the spotify search.-->
 </div>
