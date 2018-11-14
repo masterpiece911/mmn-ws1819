@@ -18,6 +18,9 @@
          */
         get (url) {
           // TODO Make a get request to the given URL
+          return fetch(url, {
+            method: 'GET'
+          }).then((res) => res.json());
         }
       }
 
@@ -31,7 +34,7 @@
           */
         search (query, type) {
           // TODO construct the URL
-          const url = '';
+          const url = this.BASE_URL + "/search?q=" + query + "&type=" + type + "&key=" + this.API_KEY;
           return this.get(url);
         }
 
@@ -57,6 +60,7 @@
       }
 
       SpotifyAPI.prototype.BASE_URL = 'http://flobe-online.de:3000';
+      SpotifyAPI.prototype.API_KEY = 'm-ulti-M-EDIA';
       // TODO define the API_KEY such that is available in SpotifyAPI instances, i.e. as member constant
 
       class SpotifyApp {
@@ -79,6 +83,8 @@
           if (e.keyCode === 13 && this.input.value.length > 2) {
             e.preventDefault();
             // TODO get results from this.api and render the results with this.renderResults
+            const results = this.api.searchArtist(this.input.value)
+            this.renderResults(results)
 
           }
         }
@@ -92,7 +98,12 @@
           // name: the name of the artist
           // href: the URL of the artists spotify site
           // images: the list of preview images
-          artists.forEach((artist) => {
+          artists.forEach(({
+            name,
+            external_urls: {
+              spotify: href
+            }, 
+            images: images }) => {
 
             const wrapper = document.createElement('a');
             if (images.length) {
