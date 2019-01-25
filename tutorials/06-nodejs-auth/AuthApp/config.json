@@ -1,6 +1,6 @@
 {
-  "SECRET": "TODO",
-  "API_KEY": "TODO",
+  "SECRET": "There is no pain",
+  "API_KEY": "m-ulti-M-EDIA",
   "JWT": {
     "ISSUER": "de.lmu.ifi.medien.mmn",
     "AUDIENCE": "http://localhost:3000"

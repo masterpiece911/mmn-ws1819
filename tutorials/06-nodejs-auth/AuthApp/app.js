@@ -3,9 +3,13 @@ const path = require('path');
 const logger = require('morgan');
 const cookieParser = require('cookie-parser');
 const bodyParser = require('body-parser');
+const passport = require('passport');
+const config = require('./config');
 
 
 // Our custom modules:
+const privateRoute = require('./routes/private');
+const authRoute = require('./routes/auth');
 
 // Instantiate the web app.
 const app = express();
@@ -23,9 +27,37 @@ app.use(cookieParser());
 // Now all parsing middleware is there and we can use more advanced middleware.
 
 // TODO initialize passport
+app.use(passport.initialize());
+
+const { Strategy, ExtractJwt } = require('passport-jwt');
+
+const jwtOptions = {
+  secretOrKey: config.SECRET,
+  jwtFromRequest: ExtractJwt.fromAuthHeaderAsBearerToken(),
+};
+
+passport.use('mmn-auth', new Strategy(
+  jwtOptions, (payload, done) => {
+    if (payload.auth.read) {
+      done(null, 'Authorized User');
+    } else {
+      done(null, false);
+    }
+  }
+));
 
 // Forwarder if logged in
 app.use('/', [ express.static(path.join(__dirname, 'public')) ]);
+app.use('/auth', authRoute);
+
+app.use('/private', [
+  passport.authenticate('mmn-auth', {
+    failWithError: true,
+    session: false,
+  }),
+  privateRoute,
+]);
+
 
 
 // Catch 404 and forward to error handler

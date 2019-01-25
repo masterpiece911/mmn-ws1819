@@ -3,6 +3,7 @@ const express = require('express');
 const router = express.Router();
 const Jimp = require('jimp');
 const path = require('path');
+const fs = require('fs');
 
 // Constants
 const FONT_PATH = path.join(__dirname, '..', 'public', 'impact.fnt');
@@ -42,7 +43,7 @@ router.get('/memes', (req, res) => {
 router.get('/memes/:key', async (req, res, next) => {
   try {
     // Get the correct image from the IMAGES object
-    const imageName = IMAGES[/* TODO */];
+    const imageName = IMAGES[req.params.key];
 
     // No meme found? Handle somewhere else!
     if (!imageName) {
@@ -58,15 +59,38 @@ router.get('/memes/:key', async (req, res, next) => {
 
 
     // TODO get all the query parameters
+    const text = req.query.text;
+    const text2 = req.query.text2;
+    const x = parseInt(req.query.x);
+    const y = parseInt(req.query.y);
+    const x2 = parseInt(req.query.x2);
+    const y2 = parseInt(req.query.y2);
 
+    // const { x, y, x2, y2, text, text2 } = req.query;
 
     // TODO read the image
-    const img = await /* TODO */;
+    const img = await Jimp.read(imagePath);
 
     const font = await Jimp.loadFont(FONT_PATH);
 
     // TODO write the text onto the image, using .print(font, x-offset, y-offset, text)
-    const imageWithText = /* TODO */;
+
+    /* const image = {
+        data: img.scale(2);
+        width: img.getWidth();
+        height: img.getHeight();
+    };
+
+    const upperCaption = {
+      text: text || '',
+      x: (image.width - Jimp.measureText(font,text || '')) / 2 + (parseInt(x) || 0),
+      y: 
+      
+    }
+    */
+    
+    const imageWithText = img.print(font, x, y, text).print(font, x2, y2, text2);
+    
 
     // Write to output path
     await imageWithText.writeAsync(imageOutPath);
@@ -77,6 +101,24 @@ router.get('/memes/:key', async (req, res, next) => {
     console.error(err);
     throw err;
   }
+});
+
+router.get('/memes/:key/thumb', async (req, res, next) => {
+
+  const imageName = IMAGES[req.params.key];
+
+  if (!imageName) {
+    return next();
+  }
+
+  const imagePath = path.join(IMAGE_BASE_PATH, imageName);
+  const imageOutPath = path.join(
+    IMAGE_BASE_PATH,
+    `${path.basename(imageName).split('.')[0]}_out${path.extname(imageName)}`,
+  );
+
+  const img = await Jimp.read(image)
+
 });
 
 module.exports = router;

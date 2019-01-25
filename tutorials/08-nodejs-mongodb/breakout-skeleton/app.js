@@ -8,7 +8,7 @@ var musicRouter = require('./routes/music');
 
 var app = express();
 
-var db = require('monk')('localhost/spotify');
+var db = require('monk')('localhost/spotifyalbums');
 app.use(function(req,res,next){  req.db = db;
     next();
 });
